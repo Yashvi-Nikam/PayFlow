@@ -1,6 +1,5 @@
 # PayFlow — Payroll Management System
 
-![PayFlow Dashboard](screenshots/Admin-Dashboard.png)
 
 ## What is this?
 
@@ -95,7 +94,7 @@ PayFlow.Frontend/
 ### Admin
 | Dashboard | Employees |
 |---|---|
-| ![](screenshots/Admin-Dashboard.png) | ![](screenshots/Admin-Employee.png) |
+| ![](screenshots/Admin-Dashboard.png) | ![](screenshots/Admin-Employee.png) | 
 
 | Add Employee | Employee Detail |
 |---|---|

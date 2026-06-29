@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayFlow — Employee Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon" id="sidebar-logo">🎓</div>
+            <div class="sidebar-brand-text">
+                <h6 id="school-name">Playgroup Branch</h6>
+                <span>Payroll System</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></div>
+            <div class="nav-item"><a href="employees.html" class="nav-link active"><i class="fas fa-users"></i> Employees</a></div>
+            <div class="nav-item"><a href="attendance.html" class="nav-link"><i class="fas fa-calendar-check"></i> Attendance</a></div>
+            <div class="nav-item"><a href="payroll.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Payroll</a></div>
+            <div class="nav-item"><a href="payslips.html" class="nav-link"><i class="fas fa-receipt"></i> Payslips</a></div>
+            <div class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a></div>
+            <div class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a></div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="current-month-badge">
+                <i class="fas fa-calendar"></i>
+                <div>
+                    <div class="label">Current Month</div>
+                    <div class="month" id="current-month-display"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search by name, designation, email or contact..." oninput="filterEmployees()">
+            </div>
+            <div class="topbar-right">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-menu" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="topbar-avatar"></div>
+                    <div class="user-info">
+                        <div class="name" id="topbar-username"></div>
+                        <div class="role" id="topbar-role"></div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:11px;color:#6b7280;"></i>
+                </div>
+                <div id="user-dropdown" style="display:none;position:absolute;top:60px;right:24px;background:#1e2130;border:1px solid #2d3148;border-radius:12px;padding:8px;min-width:180px;z-index:999;">
+                    <a href="settings.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#9ca3af;text-decoration:none;font-size:13px;"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="../changepassword.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#9ca3af;text-decoration:none;font-size:13px;"><i class="fas fa-lock"></i> Change Password</a>
+                    <hr style="border-color:#2d3148;margin:6px 0;">
+                    <a href="#" onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#ef4444;text-decoration:none;font-size:13px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <div class="page-content">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                <div class="page-header" style="margin:0;">
+                    <h4>Employee Management</h4>
+                    <p>Manage all employee records</p>
+                </div>
+                <button class="btn-primary-custom" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Add Employee
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+                <div class="search-bar" style="width:320px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input2" placeholder="Search by name, designation..." oninput="filterEmployees()">
+                </div>
+                <select id="status-filter" class="form-control-custom" style="width:150px;" onchange="filterEmployees()">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Table -->
+            <div class="table-card">
+                <div style="overflow-x:auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>Contact</th>
+                                
+                                <th>Status</th>
+                                <th>Date of Joining</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employees-body">
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:40px;">
+                                    <div class="spinner" style="margin:0 auto;"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="padding:16px 24px;border-top:1px solid #2d3148;display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:13px;color:#6b7280;" id="showing-text">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD EMPLOYEE MODAL -->
+<div class="modal fade modal-custom" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control-custom" id="add-name" placeholder="Enter full name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control-custom" id="add-email" placeholder="Enter email address">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Designation *</label>
+                        <input type="text" class="form-control-custom" id="add-designation" placeholder="e.g. Teacher, Accountant">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contact Number *</label>
+                        <input type="text" class="form-control-custom" id="add-contact" placeholder="Enter contact number">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Basic Pay *</label>
+                        <input type="number" class="form-control-custom" id="add-basic-pay" placeholder="Enter basic pay">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Conveyance Allowance *</label>
+                        <input type="number" class="form-control-custom" id="add-allowance" placeholder="Enter allowance">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Joining *</label>
+                        <input type="date" class="form-control-custom" id="add-doj">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Aadhaar Number</label>
+                        <input type="text" class="form-control-custom" id="add-aadhaar" placeholder="Enter aadhaar number">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control-custom" id="add-address" placeholder="Enter full address" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" id="add-create-account" style="accent-color:#6c63ff;width:16px;height:16px;">
+                            <span style="font-size:13px;color:#9ca3af;">Create login account for this employee</span>
+                        </label>
+                    </div>
+                    <div class="col-12" id="username-field" style="display:none;">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control-custom" id="add-username" placeholder="e.g. priya.sharma">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn-primary-custom" onclick="createEmployee()">
+                    <i class="fas fa-plus"></i> Create Employee
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT EMPLOYEE MODAL -->
+<div class="modal fade modal-custom" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <input type="hidden" id="edit-id">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control-custom" id="edit-name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control-custom" id="edit-email">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Designation *</label>
+                        <input type="text" class="form-control-custom" id="edit-designation">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contact Number</label>
+                        <input type="text" class="form-control-custom" id="edit-contact">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Basic Pay *</label>
+                        <input type="number" class="form-control-custom" id="edit-basic-pay">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Conveyance Allowance</label>
+                        <input type="number" class="form-control-custom" id="edit-allowance">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Joining</label>
+                        <input type="date" class="form-control-custom" id="edit-doj">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Aadhaar Number</label>
+                        <input type="text" class="form-control-custom" id="edit-aadhaar">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control-custom" id="edit-address" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                            <input type="checkbox" id="edit-reset-password" style="accent-color:#6c63ff;width:16px;height:16px;">
+                            <span style="font-size:13px;color:#9ca3af;">Reset password to Welcome@123</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn-primary-custom" onclick="updateEmployee()">
+                    <i class="fas fa-save"></i> Update Employee
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW EMPLOYEE MODAL -->
+<div class="modal fade modal-custom" id="viewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px;" id="view-modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/api.js"></script>
+
+<script>
+    requireAdmin();
+
+    let allEmployees = [];
+
+    function toggleUserDropdown() {
+        const dd = document.getElementById("user-dropdown");
+        dd.style.display = dd.style.display === "none" ? "block" : "none";
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".user-menu") && !e.target.closest("#user-dropdown")) {
+            const dd = document.getElementById("user-dropdown");
+            if (dd) dd.style.display = "none";
+        }
+    });
+
+    function logout() {
+        clearUser();
+        window.location.href = "../index.html";
+    }
+
+    function setupTopbar() {
+        const user = getUser();
+        document.getElementById("topbar-username").textContent = user.username || "Admin";
+        document.getElementById("topbar-role").textContent     = "Administrator";
+        document.getElementById("topbar-avatar").textContent   = getInitials(user.username);
+    }
+
+    // Load employees
+    async function loadEmployees() {
+        try {
+            allEmployees = await EmployeeAPI.getAll();
+            renderEmployees(allEmployees);
+        } catch (err) {
+            showToast("Failed to load employees.", "error");
+        }
+    }
+
+    function renderEmployees(list) {
+        const tbody = document.getElementById("employees-body");
+        const showText = document.getElementById("showing-text");
+
+        if (!list || list.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align:center;padding:40px;color:#6b7280;">
+                        No employees found
+                    </td>
+                </tr>`;
+            showText.textContent = "No records found";
+            return;
+        }
+
+        showText.textContent = `Showing 1 to ${list.length} of ${list.length} employees`;
+
+        tbody.innerHTML = list.map(e => `
+            <tr>
+                <td style="font-weight:600;color:#6c63ff;">${formatEmployeeId(e.employeeId)}</td>
+                <td>
+                    <div class="employee-cell">
+                        <div class="emp-avatar">
+                            ${e.photoPath 
+                                ? `<img src="http://localhost:5091${e.photoPath}?t=${Date.now()}" 
+                                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                                : getInitials(e.name)}
+                        </div>
+                        <div>
+                            <div class="emp-name">${e.name}</div>
+                            <div class="emp-designation">${e.designation}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${e.designation}</td>
+                <td>${e.contact || "—"}</td>
+                
+                <td>
+                    <span class="badge-status ${e.isActive ? 'badge-active' : 'badge-inactive'}">
+                        ${e.isActive ? "Active" : "Inactive"}
+                    </span>
+                </td>
+                <td>${formatDate(e.dateOfJoining)}</td>
+                <td>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn-icon view" onclick="viewEmployee(${e.employeeId})" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon edit" onclick="openEditModal(${e.employeeId})" title="Edit">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-icon ${e.isActive ? 'danger' : 'success'}"
+                            onclick="${e.isActive ? 'deactivateEmployee' : 'activateEmployee'}(${e.employeeId})"
+                            title="${e.isActive ? 'Deactivate' : 'Activate'}">
+                            <i class="fas fa-${e.isActive ? 'user-slash' : 'user-check'}"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    // Filter
+    function filterEmployees() {
+        const search = (document.getElementById("search-input")?.value ||
+                       document.getElementById("search-input2")?.value || "").toLowerCase();
+        const status = document.getElementById("status-filter").value;
+
+        let filtered = allEmployees.filter(e => {
+            const matchSearch =
+                e.name.toLowerCase().includes(search) ||
+                e.designation.toLowerCase().includes(search) ||
+                (e.email || "").toLowerCase().includes(search) ||
+                (e.contact || "").includes(search);
+
+            const matchStatus = !status ||
+                (status === "active" && e.isActive) ||
+                (status === "inactive" && !e.isActive);
+
+            return matchSearch && matchStatus;
+        });
+
+        renderEmployees(filtered);
+    }
+
+    // Open Add Modal
+    function openAddModal() {
+        document.getElementById("add-name").value        = "";
+        document.getElementById("add-email").value       = "";
+        document.getElementById("add-designation").value = "";
+        document.getElementById("add-contact").value     = "";
+        document.getElementById("add-basic-pay").value   = "";
+        document.getElementById("add-allowance").value   = "";
+        document.getElementById("add-doj").value         = "";
+        document.getElementById("add-aadhaar").value     = "";
+        document.getElementById("add-address").value     = "";
+        document.getElementById("add-create-account").checked = false;
+        document.getElementById("username-field").style.display = "none";
+        new bootstrap.Modal(document.getElementById("addModal")).show();
+    }
+
+    // Toggle username field
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("add-create-account").addEventListener("change", (e) => {
+            document.getElementById("username-field").style.display =
+                e.target.checked ? "block" : "none";
+        });
+    });
+
+    // Create employee
+    async function createEmployee() {
+        const name        = document.getElementById("add-name").value.trim();
+        const designation = document.getElementById("add-designation").value.trim();
+        const basicPay    = document.getElementById("add-basic-pay").value;
+        const doj         = document.getElementById("add-doj").value;
+
+        if (!name || !designation || !basicPay || !doj) {
+            showToast("Please fill required fields.", "warning");
+            return;
+        }
+
+        try {
+            const data = {
+                name,
+                designation,
+                email:               document.getElementById("add-email").value.trim(),
+                contact:             document.getElementById("add-contact").value.trim(),
+                basicPay:            parseFloat(basicPay),
+                conveyanceAllowance: parseFloat(document.getElementById("add-allowance").value || 0),
+                dateOfJoining:       doj,
+                aadhaar:             document.getElementById("add-aadhaar").value.trim(),
+                address:             document.getElementById("add-address").value.trim()
+            };
+
+            const created = await EmployeeAPI.create(data);
+            showToast("Employee created successfully!", "success");
+
+            // Create account if checked
+            const createAccount = document.getElementById("add-create-account").checked;
+            const username      = document.getElementById("add-username")?.value.trim();
+
+            if (createAccount && username) {
+                try {
+                    // Get the newly created employee id
+                    const employees = await EmployeeAPI.getAll();
+                    const newest    = employees[employees.length - 1];
+                    await EmployeeAPI.createAccount(newest.employeeId, username);
+                    showToast(`Account created! Temp password: Welcome@123`, "info");
+                } catch (accErr) {
+                    showToast("Employee created but account failed: " + accErr.message, "warning");
+                }
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById("addModal")).hide();
+            loadEmployees();
+
+        } catch (err) {
+            showToast(err.message || "Failed to create employee.", "error");
+        }
+    }
+
+    // Open Edit Modal
+    async function openEditModal(id) {
+        try {
+            const e = await EmployeeAPI.getById(id);
+            document.getElementById("edit-id").value          = e.employeeId;
+            document.getElementById("edit-name").value        = e.name;
+            document.getElementById("edit-email").value       = e.email || "";
+            document.getElementById("edit-designation").value = e.designation;
+            document.getElementById("edit-contact").value     = e.contact || "";
+            document.getElementById("edit-basic-pay").value   = e.basicPay;
+            document.getElementById("edit-allowance").value   = e.conveyanceAllowance;
+            document.getElementById("edit-doj").value         = e.dateOfJoining?.split("T")[0] || "";
+            document.getElementById("edit-aadhaar").value     = e.aadhaar || "";
+            document.getElementById("edit-address").value     = e.address || "";
+            document.getElementById("edit-reset-password").checked = false;
+            new bootstrap.Modal(document.getElementById("editModal")).show();
+        } catch (err) {
+            showToast("Failed to load employee.", "error");
+        }
+    }
+
+    // Update employee
+    async function updateEmployee() {
+        const id = document.getElementById("edit-id").value;
+
+        try {
+            await EmployeeAPI.update(id, {
+                name:               document.getElementById("edit-name").value.trim(),
+                designation:        document.getElementById("edit-designation").value.trim(),
+                email:              document.getElementById("edit-email").value.trim(),
+                contact:            document.getElementById("edit-contact").value.trim(),
+                basicPay:           parseFloat(document.getElementById("edit-basic-pay").value),
+                conveyanceAllowance:parseFloat(document.getElementById("edit-allowance").value || 0),
+                dateOfJoining:      document.getElementById("edit-doj").value,
+                aadhaar:            document.getElementById("edit-aadhaar").value.trim(),
+                address:            document.getElementById("edit-address").value.trim()
+            });
+
+            // Reset password if checked
+            if (document.getElementById("edit-reset-password").checked) {
+                await fetch(`http://localhost:5091/api/employee/${id}/reset-password`, {
+                    method: "PATCH",
+                    headers: { "Authorization": `Bearer ${getToken()}` }
+                });
+                showToast("Password reset to Welcome@123", "info");
+            }
+
+            showToast("Employee updated successfully!", "success");
+            bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
+            loadEmployees();
+
+        } catch (err) {
+            showToast(err.message || "Failed to update employee.", "error");
+        }
+    }
+
+    // View employee
+    async function viewEmployee(id) {
+        try {
+            const e = await EmployeeAPI.getById(id);
+            document.getElementById("view-modal-body").innerHTML = `
+                <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+                    <div style="text-align:center;">
+                    <div style="width:80px;height:80px;border-radius:50%;background:#6c63ff;
+                                display:flex;align-items:center;justify-content:center;
+                                font-size:28px;font-weight:700;color:white;overflow:hidden;">
+                        ${e.photoPath 
+                            ? `<img src="http://localhost:5091${e.photoPath}?t=${Date.now()}" 
+                                    style="width:100%;height:100%;object-fit:cover;">`
+                            : getInitials(e.name)}
+                    </div>
+                        <div style="font-size:16px;font-weight:600;">${e.name}</div>
+                        <div style="font-size:12px;color:#6b7280;">${e.designation}</div>
+                        <span class="badge-status ${e.isActive ? 'badge-active' : 'badge-inactive'}" style="margin-top:8px;display:inline-block;">
+                            ${e.isActive ? "Active" : "Inactive"}
+                        </span>
+                    </div>
+                    <div style="flex:1;min-width:200px;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            ${infoRow("Employee ID", formatEmployeeId(e.employeeId))}
+                            ${infoRow("Date of Joining", formatDate(e.dateOfJoining))}
+                            ${infoRow("Contact", e.contact || "—")}
+                            ${infoRow("Email", e.email || "—")}
+                            ${infoRow("Aadhaar", e.aadhaar || "—")}
+                            ${infoRow("Address", e.address || "—")}
+                            ${infoRow("Basic Pay", formatCurrency(e.basicPay))}
+                            ${infoRow("Allowance", formatCurrency(e.conveyanceAllowance))}
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+                    <label class="btn-secondary-custom" style="cursor:pointer;">
+                        <i class="fas fa-camera"></i> Upload Photo
+                        <input type="file" accept="image/*" style="display:none;"
+                               onchange="uploadPhoto(${e.employeeId}, this)">
+                    </label>
+                    ${!e.isActive
+                        ? `<button class="btn-primary-custom" onclick="activateEmployee(${e.employeeId})">
+                               <i class="fas fa-user-check"></i> Activate
+                           </button>`
+                        : `<button class="btn-secondary-custom" style="color:#ef4444;border-color:#ef4444;"
+                               onclick="deactivateEmployee(${e.employeeId})">
+                               <i class="fas fa-user-slash"></i> Deactivate
+                           </button>`
+                    }
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById("viewModal")).show();
+        } catch (err) {
+            showToast("Failed to load employee details.", "error");
+        }
+    }
+
+    function infoRow(label, value) {
+        return `
+            <div>
+                <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">${label}</div>
+                <div style="font-size:13px;font-weight:500;">${value}</div>
+            </div>`;
+    }
+
+    // Upload photo
+    async function uploadPhoto(id, input) {
+        const file = input.files[0];
+        if (!file) return;
+        try {
+            const result = await EmployeeAPI.uploadPhoto(id, file);
+            showToast("Photo uploaded successfully!", "success");
+            // Close modal and reload
+            bootstrap.Modal.getInstance(document.getElementById("viewModal")).hide();
+            await loadEmployees();
+            // Reopen view with updated data
+            viewEmployee(id);
+        } catch (err) {
+            showToast("Failed to upload photo.", "error");
+        }
+    }
+
+    // Activate / Deactivate
+    async function activateEmployee(id) {
+        if (!confirmAction("Activate this employee?")) return;
+        try {
+            await EmployeeAPI.activate(id);
+            showToast("Employee activated!", "success");
+            bootstrap.Modal.getInstance(document.getElementById("viewModal"))?.hide();
+            loadEmployees();
+        } catch (err) {
+            showToast(err.message, "error");
+        }
+    }
+
+    async function deactivateEmployee(id) {
+        if (!confirmAction("Deactivate this employee? They will lose system access.")) return;
+        try {
+            await EmployeeAPI.deactivate(id);
+            showToast("Employee deactivated.", "success");
+            bootstrap.Modal.getInstance(document.getElementById("viewModal"))?.hide();
+            loadEmployees();
+        } catch (err) {
+            showToast(err.message, "error");
+        }
+    }
+
+    // Init
+    setupTopbar();
+    setupCurrentMonth();
+    loadEmployees();
+
+    loadBranchSettings();
+
+    async function uploadPhoto(id, input) {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+        const result = await EmployeeAPI.uploadPhoto(id, file);
+        console.log("Upload result:", result);  // ← add this
+        showToast("Photo uploaded successfully!", "success");
+        bootstrap.Modal.getInstance(document.getElementById("viewModal")).hide();
+        await loadEmployees();
+        viewEmployee(id);
+    } catch (err) {
+        console.log("Upload error:", err);  // ← add this
+        showToast("Failed to upload photo.", "error");
+    }
+}
+</script>
+</body>
+</html>

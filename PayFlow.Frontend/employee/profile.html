@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayFlow — My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon" id="sidebar-logo">🎓</div>
+            <div class="sidebar-brand-text">
+                <h6 id="school-name">Playgroup Branch</h6>
+                <span>Payroll System</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></div>
+            <div class="nav-item"><a href="profile.html" class="nav-link active"><i class="fas fa-user"></i> My Profile</a></div>
+            <div class="nav-item"><a href="payslips.html" class="nav-link"><i class="fas fa-receipt"></i> My Payslips</a></div>
+            <div class="nav-item"><a href="attendance.html" class="nav-link"><i class="fas fa-calendar-check"></i> Attendance Overview</a></div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="current-month-badge">
+                <i class="fas fa-calendar"></i>
+                <div>
+                    <div class="label">Current Month</div>
+                    <div class="month" id="current-month-display"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar no-search"></div>
+            <div class="topbar-right">
+                <div class="notif-btn"><i class="fas fa-bell"></i></div>
+                <div class="user-menu" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="topbar-avatar"></div>
+                    <div class="user-info">
+                        <div class="name" id="topbar-username"></div>
+                        <div class="role" id="topbar-role"></div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:11px;color:#6b7280;"></i>
+                </div>
+                <div id="user-dropdown" style="display:none;position:absolute;top:60px;right:24px;background:#1e2130;border:1px solid #2d3148;border-radius:12px;padding:8px;min-width:180px;z-index:999;">
+                    <a href="../changepassword.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#9ca3af;text-decoration:none;font-size:13px;"><i class="fas fa-lock"></i> Change Password</a>
+                    <hr style="border-color:#2d3148;margin:6px 0;">
+                    <a href="#" onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#ef4444;text-decoration:none;font-size:13px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="page-header">
+                <h4>My Profile</h4>
+                <p>View and update your personal information</p>
+            </div>
+
+            <div class="row g-4">
+
+                <!-- Profile View -->
+                <div class="col-lg-5">
+                    <div class="card" style="padding:24px;text-align:center;">
+                        <div style="position:relative;display:inline-block;margin:0 auto 16px;">
+                            <div id="profile-avatar" style="
+                                width:100px;height:100px;border-radius:50%;
+                                background:#6c63ff;display:flex;align-items:center;
+                                justify-content:center;font-size:36px;font-weight:700;
+                                color:white;margin:0 auto;overflow:hidden;">
+                            </div>
+                            <label style="
+                                position:absolute;bottom:0;right:0;
+                                background:#6c63ff;border-radius:50%;
+                                width:32px;height:32px;display:flex;
+                                align-items:center;justify-content:center;
+                                cursor:pointer;border:2px solid #1a1d27;">
+                                <i class="fas fa-camera" style="font-size:12px;color:white;"></i>
+                                <input type="file" accept="image/*" style="display:none;"
+                                    onchange="uploadMyPhoto(this)">
+                            </label>
+                        </div>
+                        <div style="font-size:20px;font-weight:700;color:whitesmoke" id="profile-name">—</div>
+                        <div style="display:inline-block;background:var(--accent-light);color:var(--accent);padding:4px 14px;border-radius:20px;font-size:13px;font-weight:500;margin:8px 0;" id="profile-designation">—</div>
+
+                        <div style="margin-top:20px;text-align:left;">
+                            <div style="margin-bottom:12px;">
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Employee ID</div>
+                                <div style="font-size:14px;font-weight:600;color:#6c63ff;" id="profile-empid">—</div>
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Date of Joining</div>
+                                <div style="font-size:14px;font-weight:500;color:whitesmoke;" id="profile-doj">—</div>
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Contact Number</div>
+                                <div style="font-size:14px;font-weight:500;color:whitesmoke;" id="profile-contact">—</div>
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Email</div>
+                                <div style="font-size:14px;font-weight:500;color:whitesmoke;" id="profile-email">—</div>
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Address</div>
+                                <div style="font-size:14px;font-weight:500;color:whitesmoke;" id="profile-address">—</div>
+                            </div>
+                            <div>
+                                <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Aadhaar Number</div>
+                                <div style="font-size:14px;font-weight:500;color:whitesmoke;" id="profile-aadhaar">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Profile -->
+                <div class="col-lg-7">
+                    <div class="card" style="padding:24px;">
+                        <h6 style="font-size:15px;font-weight:600;color:#9baac8;margin-bottom:20px;">Edit Profile</h6>
+                        <p style="font-size:13px;color:#6b7280;margin-bottom:20px;">Update your personal details</p>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control-custom" id="edit-name" readonly
+                                    style="opacity:0.6;cursor:not-allowed;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Contact Number</label>
+                                <input type="text" class="form-control-custom" id="edit-contact" placeholder="Enter contact number">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control-custom" id="edit-email" placeholder="Enter email">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control-custom" id="edit-address" rows="3" placeholder="Enter address"></textarea>
+                            </div>
+                        </div>
+
+                        <div style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:12px;margin-top:16px;font-size:13px;color:#9ca3af;">
+                            <i class="fas fa-info-circle" style="color:#6c63ff;"></i>
+                            Note: You can only update your contact information and address. Salary, Designation and Date of Joining cannot be changed.
+                        </div>
+
+                        <div style="margin-top:20px;display:flex;gap:10px;">
+                            <button class="btn-secondary-custom" onclick="loadProfile()">Cancel</button>
+                            <button class="btn-primary-custom" onclick="saveProfile()">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>
+    requireEmployee();
+
+    function toggleUserDropdown() {
+        const dd = document.getElementById("user-dropdown");
+        dd.style.display = dd.style.display === "none" ? "block" : "none";
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".user-menu") && !e.target.closest("#user-dropdown")) {
+            const dd = document.getElementById("user-dropdown");
+            if (dd) dd.style.display = "none";
+        }
+    });
+
+    function logout() { clearUser(); window.location.href = "../index.html"; }
+
+    function setupTopbar() {
+        const user = getUser();
+        document.getElementById("topbar-username").textContent = user.username || "";
+        document.getElementById("topbar-role").textContent     = "Employee";
+        document.getElementById("topbar-avatar").textContent   = getInitials(user.username);
+    }
+
+    async function loadProfile() {
+        try {
+            const p = await ProfileAPI.get();
+
+            document.getElementById("profile-name").textContent        = p.name;
+            document.getElementById("profile-designation").textContent = p.designation;
+            document.getElementById("profile-empid").textContent       = formatEmployeeId(p.employeeId);
+            document.getElementById("profile-doj").textContent         = formatDate(p.dateOfJoining);
+            document.getElementById("profile-contact").textContent     = p.contact || "—";
+            document.getElementById("profile-email").textContent       = p.email || "—";
+            document.getElementById("profile-address").textContent     = p.address || "—";
+            document.getElementById("profile-aadhaar").textContent     = p.aadhaar || "—";
+
+            // Avatar
+            const avatar = document.getElementById("profile-avatar");
+            if (p.photoPath) {
+                avatar.innerHTML = `<img src="http://localhost:5091${p.photoPath}"
+                    style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                avatar.textContent = getInitials(p.name);
+            }
+
+            // Edit fields
+            document.getElementById("edit-name").value    = p.name;
+            document.getElementById("edit-contact").value = p.contact || "";
+            document.getElementById("edit-email").value   = p.email || "";
+            document.getElementById("edit-address").value = p.address || "";
+
+            loadBranchSettings();
+
+        } catch (err) {
+            showToast("Failed to load profile.", "error");
+        }
+    }
+
+    async function saveProfile() {
+        try {
+            await ProfileAPI.update({
+                address: document.getElementById("edit-address").value.trim(),
+                contact: document.getElementById("edit-contact").value.trim(),
+                email:   document.getElementById("edit-email").value.trim()
+            });
+            showToast("Profile updated successfully!", "success");
+            loadProfile();
+        } catch (err) {
+            showToast(err.message || "Failed to update profile.", "error");
+        }
+    }
+
+    async function uploadMyPhoto(input) {
+        const file = input.files[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch("http://localhost:5091/api/profile/upload-photo", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${getToken()}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+            showToast("Photo updated!", "success");
+            loadProfile();
+        } catch (err) {
+            showToast("Failed to upload photo.", "error");
+        }
+    }
+
+    setupTopbar();
+    setupCurrentMonth();
+    loadProfile();
+    loadBranchSettings();
+</script>
+</body>
+</html>
+

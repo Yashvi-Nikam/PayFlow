@@ -14,4 +14,5 @@ public class EmployeeResponseDto
     public decimal ConveyanceAllowance { get; set; }
     public string? PhotoPath { get; set; }
     public bool IsActive { get; set; }
+    public bool HasAccount { get; set; }
 }

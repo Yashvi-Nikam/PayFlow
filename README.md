@@ -176,7 +176,27 @@ Hosted for free using:
 | Render.com | ASP.NET Core API |
 | Netlify | Frontend |
 
-🔗 Live: *coming soon*
+
+🔗 Live: 
+
+Frontend:
+[https://your-netlify-site.netlify.app](https://payflow-payroll-management-system.netlify.app/)
+
+API (Swagger):
+[https://your-render-app.onrender.com/swagger](https://payflow-api-i1f3.onrender.com)
+
+
+---
+
+Running Your Own Instance
+
+This repository is intended for learning and portfolio purposes. To run your own independent copy:
+
+ - Create your own PostgreSQL or Supabase database.
+ - Configure your own connection string and JWT settings.
+ - Deploy the backend and update the frontend API endpoint.
+ 
+Each deployment uses its own database, so your data remains completely separate from anyone else's.
 
 ---
 

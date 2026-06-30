@@ -17,18 +17,20 @@ public class EmployeeService : IEmployeeService
         _userRepo = userRepo;
     }
 
-    public async Task<IEnumerable<EmployeeResponseDto>> GetAllAsync()
-    {
-        var employees = await _employeeRepo.GetAllAsync();
-        return employees.Select(e => MapToResponse(e));
-    }
+public async Task<IEnumerable<Employee>> GetAllAsync()
+{
+    return await _context.Employees
+        .Include(e => e.User)
+        .OrderBy(e => e.Name)
+        .ToListAsync();
+}
 
-    public async Task<EmployeeResponseDto> GetByIdAsync(int employeeId)
-    {
-        var employee = await _employeeRepo.GetByIdAsync(employeeId)
-            ?? throw new NotFoundException($"Employee with ID {employeeId} not found.");
-        return MapToResponse(employee);
-    }
+public async Task<Employee?> GetByIdAsync(int employeeId)
+{
+    return await _context.Employees
+        .Include(e => e.User)
+        .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
+}
 
     public async Task AddAsync(EmployeeCreateDto dto)
     {

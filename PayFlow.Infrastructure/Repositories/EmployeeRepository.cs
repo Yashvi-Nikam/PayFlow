@@ -17,6 +17,7 @@ public class EmployeeRepository : IEmployeeRepository
     public async Task<IEnumerable<Employee>> GetAllAsync()
     {
         return await _context.Employees
+            .Include(e => e.User)
             .OrderBy(e => e.Name)
             .ToListAsync();
     }
@@ -24,6 +25,7 @@ public class EmployeeRepository : IEmployeeRepository
     public async Task<Employee?> GetByIdAsync(int employeeId)
     {
         return await _context.Employees
+            .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
     }
 
@@ -38,11 +40,13 @@ public class EmployeeRepository : IEmployeeRepository
         _context.Employees.Update(employee);
         await _context.SaveChangesAsync();
     }
+
     public async Task<Employee?> GetByEmailAsync(string email)
     {
         return await _context.Employees
             .FirstOrDefaultAsync(e => e.Email == email);
     }
+
     public async Task<Employee?> GetByAadhaarAsync(string aadhaar)
     {
         return await _context.Employees

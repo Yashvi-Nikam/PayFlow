@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayFlow — Payslips</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon" id="sidebar-logo">🎓</div>
+            <div class="sidebar-brand-text">
+                <h6 id="school-name">Playgroup Branch</h6>
+                <span>Payroll System</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></div>
+            <div class="nav-item"><a href="employees.html" class="nav-link"><i class="fas fa-users"></i> Employees</a></div>
+            <div class="nav-item"><a href="attendance.html" class="nav-link"><i class="fas fa-calendar-check"></i> Attendance</a></div>
+            <div class="nav-item"><a href="payroll.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Payroll</a></div>
+            <div class="nav-item"><a href="payslips.html" class="nav-link active"><i class="fas fa-receipt"></i> Payslips</a></div>
+            <div class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a></div>
+            <div class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a></div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="current-month-badge">
+                <i class="fas fa-calendar"></i>
+                <div>
+                    <div class="label">Current Month</div>
+                    <div class="month" id="current-month-display"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search by employee name..." oninput="filterPayslips()">
+            </div>
+            <div class="topbar-right">
+                <div class="notif-btn"><i class="fas fa-bell"></i><span class="notif-badge">0</span></div>
+                <div class="user-menu" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="topbar-avatar"></div>
+                    <div class="user-info">
+                        <div class="name" id="topbar-username"></div>
+                        <div class="role" id="topbar-role"></div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:11px;color:#6b7280;"></i>
+                </div>
+                <div id="user-dropdown" style="display:none;position:absolute;top:60px;right:24px;background:#1e2130;border:1px solid #2d3148;border-radius:12px;padding:8px;min-width:180px;z-index:999;">
+                    <a href="settings.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#9ca3af;text-decoration:none;font-size:13px;"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="../changepassword.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#9ca3af;text-decoration:none;font-size:13px;"><i class="fas fa-lock"></i> Change Password</a>
+                    <hr style="border-color:#2d3148;margin:6px 0;">
+                    <a href="#" onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#ef4444;text-decoration:none;font-size:13px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                <div class="page-header" style="margin:0;">
+                    <h4>Admin Payslips</h4>
+                    <p>View and manage all employee payslips</p>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                    <select id="month-select" class="form-control-custom" style="width:140px;" onchange="loadPayslips()">
+                        <option value="0">All Months</option>
+                        <option value="1">January</option><option value="2">February</option>
+                        <option value="3">March</option><option value="4">April</option>
+                        <option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option>
+                        <option value="9">September</option><option value="10">October</option>
+                        <option value="11">November</option><option value="12">December</option>
+                    </select>
+                    <select id="year-select" class="form-control-custom" style="width:100px;" onchange="loadPayslips()"></select>
+                    <select id="status-filter" class="form-control-custom" style="width:130px;" onchange="filterPayslips()">
+                        <option value="">All Status</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div style="overflow-x:auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Month</th>
+                                <th>Net Pay</th>
+                                <th>Status</th>
+                                <th>Paid Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payslips-body">
+                            <tr><td colspan="6" style="text-align:center;padding:40px;">
+                                <div class="spinner" style="margin:0 auto;"></div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="padding:16px 24px;border-top:1px solid #2d3148;">
+                    <span style="font-size:13px;color:#6b7280;" id="showing-text">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAYSLIP DETAIL MODAL -->
+<div class="modal fade modal-custom" id="payslipModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title">Payslip Details</h5>
+                    <p style="font-size:12px;color:#6b7280;margin:0;">Detailed breakdown for the selected payroll</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding:24px;" id="payslip-detail-body"></div>
+            <div class="modal-footer" id="payslip-footer"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>
+    requireAdmin();
+
+    let allPayslips = [];
+
+    function toggleUserDropdown() {
+        const dd = document.getElementById("user-dropdown");
+        dd.style.display = dd.style.display === "none" ? "block" : "none";
+    }
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".user-menu") && !e.target.closest("#user-dropdown")) {
+            const dd = document.getElementById("user-dropdown");
+            if (dd) dd.style.display = "none";
+        }
+    });
+
+    function logout() { clearUser(); window.location.href = "../index.html"; }
+
+    function setupTopbar() {
+        const user = getUser();
+        document.getElementById("topbar-username").textContent = user.username || "Admin";
+        document.getElementById("topbar-role").textContent     = "Administrator";
+        document.getElementById("topbar-avatar").textContent   = getInitials(user.username);
+    }
+
+    function setupYears() {
+        const sel  = document.getElementById("year-select");
+        const year = getCurrentYear();
+        for (let y = year+5; y >= year - 3; y--) {
+            const opt = document.createElement("option");
+            opt.value = y; opt.textContent = y;
+            sel.appendChild(opt);
+        }
+        sel.value = year;
+        document.getElementById("month-select").value = getCurrentMonth();
+    }
+
+    async function loadPayslips() {
+        const month = parseInt(document.getElementById("month-select").value);
+        const year  = parseInt(document.getElementById("year-select").value);
+
+        try {
+            if (month === 0) {
+                const employees = await EmployeeAPI.getAll();
+                const results   = [];
+                for (const e of employees) {
+                    const payrolls = await PayrollAPI.getByEmployee(e.employeeId).catch(() => []);
+                    results.push(...payrolls);
+                }
+                allPayslips = results;
+            } else {
+                allPayslips = await PayrollAPI.getByMonthYear(month, year).catch(() => []);
+            }
+            filterPayslips();
+        } catch (err) {
+            showToast("Failed to load payslips.", "error");
+        }
+    }
+
+    function filterPayslips() {
+        const search = document.getElementById("search-input").value.toLowerCase();
+        const status = document.getElementById("status-filter").value;
+
+        const filtered = allPayslips.filter(p => {
+            const matchSearch = p.employeeName.toLowerCase().includes(search);
+            const matchStatus = !status ||
+                (status === "paid" && p.isPaid) ||
+                (status === "pending" && !p.isPaid);
+            return matchSearch && matchStatus;
+        });
+
+        renderPayslips(filtered);
+    }
+
+    function renderPayslips(list) {
+        const tbody    = document.getElementById("payslips-body");
+        const showText = document.getElementById("showing-text");
+
+        showText.textContent = `Showing ${list.length} records`;
+
+        if (!list.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:#6b7280;">No payslips found</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = list.map(p => `
+            <tr>
+                <td>
+                    <div class="employee-cell">
+                        <div class="emp-avatar">
+                            ${p.photoPath
+                                ? `<img src="${p.photoPath}?t=${Date.now()}" 
+                                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                                : getInitials(p.employeeName)}
+                        </div>
+                        <div>
+                            <div class="emp-name">${p.employeeName}</div>
+                            <div class="emp-designation">${p.designation}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-calendar" style="color:#6c63ff;font-size:12px;"></i>
+                        ${getMonthName(p.month)} ${p.year}
+                    </div>
+                </td>
+                <td style="font-weight:600;">${formatCurrency(p.netPay)}</td>
+                <td>
+                    <span class="badge-status ${p.isPaid ? 'badge-paid' : 'badge-pending'}">
+                        ${p.isPaid ? "Paid" : "Pending"}
+                    </span>
+                </td>
+                <td>${p.isPaid ? formatDate(p.paidDate) : "—"}</td>
+                <td>
+                    <button class="btn-icon view" onclick="viewPayslip(${p.payrollId})">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    async function viewPayslip(id) {
+        try {
+            const p = await PayrollAPI.getById(id);
+
+            document.getElementById("payslip-detail-body").innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:48px;height:48px;background:#6c63ff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;color:white;">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:16px;font-weight:600;">${getMonthName(p.month)} ${p.year}</div>
+                            <div style="font-size:12px;color:#6b7280;">Salary for the month of ${getMonthName(p.month)} ${p.year}</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="badge-status ${p.isPaid ? 'badge-paid' : 'badge-pending'}" style="font-size:13px;padding:6px 14px;">
+                            ${p.isPaid ? "Paid" : "Pending"}
+                        </span>
+                        ${p.isPaid ? `<div style="font-size:12px;color:#6b7280;margin-top:4px;">Paid on ${formatDate(p.paidDate)}</div>` : ""}
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div>
+                        <div style="background:#0f1117;border-radius:12px;padding:16px;">
+                            <div style="font-size:11px;color:#6b7280;margin-bottom:12px;font-weight:600;">EMPLOYEE INFORMATION</div>
+                            ${slipRow("Name", p.employeeName)}
+                            ${slipRow("Designation", p.designation)}
+                        </div>
+                    </div>
+                    <div>
+                        <div style="background:#0f1117;border-radius:12px;padding:16px;">
+                            <div style="font-size:11px;color:#22c55e;margin-bottom:12px;font-weight:600;">● EARNINGS</div>
+                            ${slipRow("Basic Pay", formatCurrency(p.basicPay))}
+                            ${slipRow("Allowance", formatCurrency(p.allowance))}
+                            ${slipRow("Incentive", formatCurrency(p.incentive))}
+                            <hr style="border-color:#2d3148;margin:10px 0;">
+                            <div style="font-size:11px;color:#ef4444;margin-bottom:12px;font-weight:600;">● DEDUCTIONS</div>
+                            ${slipRow("Deduction", formatCurrency(p.deduction))}
+                            <hr style="border-color:#2d3148;margin:10px 0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span style="font-size:14px;font-weight:700;">Net Pay</span>
+                                <span style="font-size:20px;font-weight:700;color:#6c63ff;">${formatCurrency(p.netPay)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:12px;color:#6b7280;text-align:center;margin-top:16px;">
+                    <i class="fas fa-info-circle"></i> This is a system generated payslip. No signature is required.
+                </p>
+            `;
+
+            document.getElementById("payslip-footer").innerHTML = !p.isPaid ? `
+                <button class="btn-secondary-custom" data-bs-dismiss="modal">Close</button>
+                <button class="btn-primary-custom" onclick="markPaid(${p.payrollId})">
+                    <i class="fas fa-check"></i> Mark as Paid
+                </button>
+            ` : `<button class="btn-secondary-custom" data-bs-dismiss="modal">Close</button>`;
+
+            new bootstrap.Modal(document.getElementById("payslipModal")).show();
+        } catch (err) {
+            showToast("Failed to load payslip.", "error");
+        }
+    }
+
+    function slipRow(label, value) {
+        return `<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:13px;color:#9ca3af;">${label}</span>
+            <span style="font-size:13px;font-weight:500;">${value}</span>
+        </div>`;
+    }
+
+    async function markPaid(id) {
+        if (!confirmAction("Mark as paid? This cannot be undone.")) return;
+        try {
+            await PayrollAPI.markAsPaid(id);
+            showToast("Marked as paid!", "success");
+            bootstrap.Modal.getInstance(document.getElementById("payslipModal")).hide();
+            loadPayslips();
+        } catch (err) {
+            showToast(err.message, "error");
+        }
+    }
+
+    setupTopbar();
+    setupCurrentMonth();
+    setupYears();
+    loadPayslips();
+
+    loadBranchSettings();
+</script>
+</body>
+</html>

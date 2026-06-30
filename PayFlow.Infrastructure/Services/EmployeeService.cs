@@ -135,20 +135,21 @@ public class EmployeeService : IEmployeeService
     }
 
     private EmployeeResponseDto MapToResponse(Employee e) => new()
-    {
-        EmployeeId = e.EmployeeId,
-        Name = e.Name,
-        Designation = e.Designation,
-        Address = e.Address,
-        Contact = e.Contact,
-        Email = e.Email,
-        Aadhaar = e.Aadhaar,
-        DateOfJoining = e.DateOfJoining,
-        BasicPay = e.BasicPay,
-        ConveyanceAllowance = e.ConveyanceAllowance,
-        PhotoPath = e.PhotoPath,
-        IsActive = e.IsActive
-    };
+{
+    EmployeeId          = e.EmployeeId,
+    Name                = e.Name,
+    Designation         = e.Designation,
+    Address             = e.Address,
+    Contact             = e.Contact,
+    Email               = e.Email,
+    Aadhaar             = e.Aadhaar,
+    DateOfJoining       = e.DateOfJoining,
+    BasicPay            = e.BasicPay,
+    ConveyanceAllowance = e.ConveyanceAllowance,
+    PhotoPath           = e.PhotoPath,
+    IsActive            = e.IsActive,
+    HasAccount          = e.User != null
+};
     public async Task ResetPasswordAsync(int employeeId)
     {
         var user = await _userRepo.GetByEmployeeIdAsync(employeeId)
